@@ -1,13 +1,19 @@
 module.exports = `
-  type Leaf {
-    name: String!
+  #分页信息
+  input PageInput {
+    pageNum:Int                           #页码
+    pageSize:Int                          #每页显示多少条
+    sortField:String                      #排序字段
+    desc:Boolean                          #是否降序
   }
-  type Tree {
-    name: String!
-    leafs: [Leaf]!
-  }
-  type Query {
-    tree: Tree!
-    hello: String!
+
+  #字典
+  type Dictionary {
+    id: ID
+    parentId: String
+    dictionaryCode: String
+    dictionaryType: String
+    dictionaryName: String
+    children: [Dictionary]
   }
 `

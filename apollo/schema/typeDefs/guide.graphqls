@@ -1,0 +1,167 @@
+module.exports = `
+  #项目分组
+  type ProjectGroup {
+    #项目组id
+    id: ID!      
+
+    #项目组名称                         
+    groupName: String!  
+
+    #项目数                  
+    projectTotalNum: Int!  
+
+    #提交状态             
+    status: String!  
+
+    #分组人员                     
+    createdBy: String! 
+
+    #分组时间                 
+    createdAt: Float!                       
+  }
+
+  #项目分组专家选取建议
+  type ProjectGroupPropose {
+    #专家擅长领域
+    expertAreas: [Dictionary!]! 
+
+    #专家工作领域
+    workAreas: [Dictionary!]!
+
+    #备注
+    remark: String
+  }
+
+  #项目
+  type Project {
+    #项目id
+    id: ID!   
+
+    #项目名称                       
+    projectName: String!  
+
+    #申报单位               
+    unitName: String! 
+
+    #承担人                   
+    unitPerson: String!
+
+    #指南名称                
+    guideTitle: String! 
+
+    #计划类别名称                
+    guideCategoryName: String!           
+  }
+
+  #项目列表查询结果
+  type ProjectListPayload {
+    #总数
+    total: Int! 
+
+    #项目分组列表                         
+    list: [Project!]!                    
+  }
+
+  #项目分组列表查询结果
+  type ProjectGroupListPayload {
+    #总数
+    total: Int!
+
+    #项目分组列表                          
+    list: [ProjectGroup!]!               
+  }
+
+  #项目列表查询参数
+  input ProjectListInput {
+    #项目名称  
+    projectName: String  
+
+    #申报单位                
+    unitName: String  
+
+    #承担人                   
+    unitPerson: String     
+    
+    #指南名称             
+    guideTitle: String  
+
+    #计划类别                
+    guideCategoryId: ID                  
+  }
+
+  #项目分组修改 “专家选取建议” 参数
+  input ProjectGroupProposeInput {
+    #专家擅长领域
+    expertAreas: [ID!]!
+
+    #专家工作领域
+    workAreas: [ID!]!
+
+    #备注
+    remark: String
+  }
+  #项目分组新增、编辑参数
+  input ProjectGroupInput {
+    #项目分组名称
+    groupName: String!                   
+  }
+
+  #项目分组列表查询参数
+  input ProjectGroupListInput {
+    #分组年份
+    year: String,  
+    
+    #操作人员                      
+    createdBy: String,  
+    
+    #提交状态                  
+    status: String   
+    
+    #分组开始时间                    
+    startTime: Float  
+    
+    #分组结束时间                     
+    endTime: Float                         
+  }
+
+
+  type Query {
+    #项目分组列表
+    projectGroupList(input: ProjectGroupListInput, page: PageInput): ProjectGroupListPayload!
+    
+    #查询项目分组的项目列表
+    groupedProjectList(groupId: ID!, input: ProjectListInput, page: PageInput): ProjectListPayload!
+    
+    #查询待分组项目列表
+    ungroupedProjectList(input: ProjectListInput, page: PageInput): ProjectListPayload!
+
+    #查询项目分组的专家选取建议
+    projectGroupPropose(id: ID!): ProjectGroupPropose!
+  }
+
+  type Mutation {
+    #添加项目分组
+    addProjectGroup(input: ProjectGroupInput!): ProjectGroup!
+    
+    #编辑项目分组
+    editProjectGroup(id: ID!, input: ProjectGroupInput!): ProjectGroup!
+    
+    #项目分组修改专家选取建议
+    editProjectGroupPropose(id: ID, input: ProjectGroupProposeInput): Boolean!
+    
+    #删除项目分组
+    delProjectGroup(ids: [ID!]!): Boolean!
+    
+    #提交项目分组
+    submitProjectGroup(ids: [ID!]!): Boolean!
+    
+    #不符合指南要求提交项目分组
+    rejectProjectGroup(ids: [ID!]!): Boolean!
+    
+    #项目分组添加项目
+    groupProject(groupId: ID!, projectIds: [ID!]!): Boolean!
+    
+    #项目分组移除项目
+    ungroupProject(groupId: ID!, projectIds: [ID!]!): Boolean!
+  }
+`

@@ -6,5 +6,8 @@
     "password": "gemini830615",
     "database": "local",
     "prefix": ""
+  },
+  "jwt": {
+    "secret": "1234"
   }
 }

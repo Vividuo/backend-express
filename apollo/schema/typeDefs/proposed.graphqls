@@ -1,0 +1,276 @@
+module.exports = `
+#拟立项项目
+type ProposedProject {
+  #项目名称
+  projectName: String!
+
+  #项目编号
+  projectNum: String!
+
+  #申报单位名称
+  unitName: String!
+
+  #项目负责人
+  unitPerson: String!
+
+  #手机号
+  mobile: String!
+
+  #邮箱
+  email: String!
+
+  #项目开始日期
+  startTime: Float!
+
+  #项目结束日期
+  endTime: Float!
+
+  #计划类别
+  projectType: Dictionary
+
+  #总投入（千元）
+  totalAmount: Float!
+
+  #市科委投入（千元）
+  fundAmount: Float!
+
+  #项目配置
+  projectConfig: ProjectConfig
+
+  #项目综合评价
+  projectAppraise: ProjectAppraise
+
+  #任务书提交时间
+  assignmentSubmitAt: Float
+}
+
+#拟立项项目配置
+type ProjectConfig {
+  #项目配置开始日期
+  startTime: Float!
+
+  #项目配置结束日期
+  endTime: Float!
+
+  #拨款性质 / 经费来源
+  fundSource: Dictionary
+
+  #拨款批次
+  fundBatches: [ProjectFundBatch]
+
+  #立项方式
+  proposedType: Dictionary
+
+  #立项计划类别
+  projectType: Dictionary
+
+  #项目特征
+  feature: Dictionary
+
+  #专项名称
+  specialName: Dictionary
+
+  #劳务费占比
+  laborRatio: Dictionary
+
+  #项管中心
+  projectCenter: Dictionary
+}
+
+#拟立项项目综合评价
+type ProjectAppraise {
+  #当年拨款数（千元）
+  curYearFundAmount: Float
+
+  #拟建议科委资助经费（千元）
+  suggestFundAmount: Float
+
+  #经费来源
+  fundSource: Dictionary
+
+  #总分
+  totalScore: Float
+
+  #平均分
+  avgScore: Float
+}
+
+#拟立项项目拨款批次
+type ProjectFundBatch {
+  #拨款名称
+  name: String
+  #拨款金额
+  amount: Float
+  
+  #拨款日期
+  date: Float
+}
+
+#拟立项项目拨款批次参数
+input ProjectFundBatchInput {
+  #拨款名称
+  name: String!
+
+  #拨款金额
+  amount: Float!
+
+  #拨款日期
+  date: Float!
+}
+
+#拟立项项目配置参数
+input ProjectConfigInput {
+  #经费来源ID
+  fundSource: String
+
+  #立项方式ID
+  proposedType: String
+
+  #特征ID
+  feature: String
+
+  #专项名称ID
+  specialName: String
+
+  #项目开始时间
+  startTime: Float
+
+  #项目结束时间
+  endTime: Float
+
+  #拨款批次 []
+  fundBatches: [ProjectFundBatchInput]
+
+  #劳务费占比ID
+  laborRatio: String
+
+  #立项计划类别ID
+  proposedCategory: String
+
+  #项管中心ID
+  projectCenter: String
+}
+
+#拟立项项目列表查询参数
+input ProposedProjectsParams {
+  #项目名称
+  projectName: String
+
+  #申报单位
+  unitName: String
+
+  #计划类别
+  guideCategoryId: String
+}
+
+#拟立项项目列表查询结果
+type ProposedProjectsPayload {
+  list: [ProposedProject!]!,
+  total: Int!
+}
+
+#拟立项分组
+type ProposedGroup {
+  id: ID
+
+  #名称
+  name: String
+
+  #状态
+  status: String
+
+  #项管中心
+  projectCenter: Dictionary
+
+  #填报限定工作日数
+  limitDays: Int
+}
+
+#新增、编辑拟立项分组参数
+input ProposedGroupInput {
+  #名称
+  name: String!
+
+  #填报限定工作日数
+  limitDays: Int!
+
+  #项管中心ID
+  projectCenterId: ID!
+
+  #联系电话
+  contactTel: String!
+
+  #联系人
+  contactName: String!
+
+  #是否为计划外项目
+  isOutPlan: Boolean!
+}
+
+#拟立项分组组列表查询参数
+input ProposedGroupsParams {
+  #名称
+  name: String
+
+  #状态
+  status: String
+
+  #项管中心
+  projectCenterId: String
+
+  #填报工作日数
+  limitDays: Int
+}
+
+#拟立项分组列表查询结果
+type ProposedGroupsPayload {
+  list: [ProposedGroup!]!,
+  total: Int!
+}
+
+type Query {
+   #查询拟立项分组列表
+  proposedGroups(params: ProposedGroupsParams, page: PageInput): ProposedGroupsPayload!
+
+  #查看拟立项分组
+  proposedGroup(id: ID): ProposedGroup!
+
+  #查询拟立项项目列表
+  proposedProjects(groupId: ID, params: ProposedProjectsParams, page: PageInput): ProposedProjectsPayload!
+
+  #查看拟立项项目
+  proposedProject(id: ID): ProposedProject!
+
+  #查询项目审核日志
+}
+
+type Mutate {
+  #新增拟立项组
+  addProposedGroup(input: ProposedGroupInput!): ProposedGroup!
+
+  #编辑拟立项组
+  editProposedGroup(id: ID!, input: ProposedGroupInput!): ProposedGroup!
+
+  #删除拟立项组
+  delProposedGroup(ids: [ID!]!): Boolean!
+
+  #提交拟立项组
+  submitProposedGroup(ids: [ID!]): Boolean!
+
+  #新增拟立项组项目
+  groupProposedProject(groupId: ID!, projectIds: [ID!]!): ProposedProject!
+
+  #删除拟立项组项目
+  ungroupProposedProject(projectIds: [ID!]!): Boolean!
+
+  #配置拟立项组项目
+  configProposedProject(id: ID!, input: ProjectConfigInput): ProposedProject!
+
+  #批量配置拟立项组项目
+  batchConfigProposedProject(ids: [ID!]!, input: ProjectConfigInput): [ProposedProject!]!
+
+  #审核通过
+
+  #审核退回
+}
+`

@@ -12,7 +12,7 @@ const pool = mysql.createPool({
 
 module.exports = {
   // 获取连接
-  _getConnection() {
+  getConnection() {
     return new Promise((resolve, reject) => {
       pool.getConnection((error, connection) => {
         if (error) {
@@ -24,9 +24,32 @@ module.exports = {
     })
   },
 
+  async transaction(callback) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        conn = await this.getConnection()
+        await conn.beginTransaction()
+        await callback(conn)
+        console.log('transaction commit')
+        await conn.commit()
+        resolve(conn)
+      } catch (err) {
+        console.log('transaction rollback', err)
+        await conn.rollback()
+        reject(err)
+      } finally {
+        console.log('transaction release')
+        conn.release()
+      }
+    })
+  },
+
   // 执行sql
-  async query(sql, params) {
-    const connection = await this._getConnection()
+  async query(sql, params, connection = null) {
+    const hasConnection = !!connection
+    if (!hasConnection) {
+      connection = await this.getConnection()
+    }
     return new Promise((resolve, reject) => {
       connection.query(sql, params, (err, results, fields) => {
         if (err) {
@@ -34,7 +57,9 @@ module.exports = {
         }
         resolve(results)
       })
-      connection.release()
+      if (!hasConnection) {
+        connection.release()
+      }
     })
   }
 }
